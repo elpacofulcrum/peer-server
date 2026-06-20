@@ -1,6 +1,9 @@
 import { PeerServer } from "peer"
 
-const server = PeerServer({ path: "/", port: 9000 })
+const PORT = 10000
+const URL = process.env?.URL || "http://localhost"
+
+const server = PeerServer({ path: "/", port: PORT })
 
 server.on("connection", (ev) => {
     console.log(ev.getId(), "Connected")
@@ -13,6 +16,9 @@ server.on("disconnect", (ev) => {
 console.log("Peer server started")
 
 setInterval(() => {
-    fetch("http://localhost:9000")
-    console.log("Keep Alive Triggered", new Date().toString())
+    try {
+        fetch(`${URL}:${PORT}`)
+    } finally {
+        console.log("Keep Alive Triggered", new Date().toString())
+    }
 }, 5000)
