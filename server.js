@@ -1,7 +1,7 @@
 import { PeerServer } from "peer"
 
 const PORT = 10000
-const URL = process.env?.URL || "http://localhost"
+const KEEPALIVE_URL = process.env?.KEEPALIVE_URL
 
 const server = PeerServer({ path: "/", port: PORT })
 
@@ -15,10 +15,15 @@ server.on("disconnect", (ev) => {
 
 console.log("Peer server started")
 
-setInterval(() => {
-    try {
-        fetch(`${URL}:${PORT}`)
-    } finally {
-        console.log("Keep Alive Triggered", new Date().toString())
-    }
-}, 5000)
+// KEEPALIVE MECHANISM
+if(KEEPALIVE_URL){
+    console.log("Keep-Alive Init", new Date().toString())
+    setInterval(async() => {
+        try {
+            await fetch(KEEPALIVE_URL).then(response=>response.text())
+        } finally {
+            console.log("Keep-Alive Triggered", new Date().toString())
+        }
+    }, 5000)
+}
+// KEEPALIVE MECHANISM
